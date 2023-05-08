@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	_ = lexer.New("")
+	l := lexer.New("x = 4")
+	_ = l.Lex()
 }

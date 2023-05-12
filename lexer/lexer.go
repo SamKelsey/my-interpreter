@@ -3,11 +3,12 @@ package lexer
 import (
 	"fmt"
 	"interpreter/token"
+	"io"
 	"strings"
 )
 
 type Lexer interface {
-	Lex() []token.Token
+	Lex() ([]token.Token, error)
 }
 
 type lexer struct {
@@ -15,24 +16,49 @@ type lexer struct {
 }
 
 // TODO
-func (l *lexer) Lex() []token.Token {
+func (l *lexer) Lex() ([]token.Token, error) {
 	r := newReader(l.input)
 
-	currentPosition := 0
 	tokens := make([]token.Token, 0)
+	var err error
+	var b byte
+	for err != io.EOF {
+		b, err = r.ReadByte()
 
-	for currentPosition < len(l.input) {
-		b, err := r.ReadByte()
-		if err != nil {
-			fmt.Printf("%v", err)
+		// TODO: ignore whitespace here
+
+		var newToken *token.Token
+		switch string(b) {
+		case "+":
+			newToken = token.New(token.ADD, b)
+		case "-":
+			newToken = token.New(token.SUBTRACT, b)
+		case "=":
+			// Check for equate
+			nextByte, err := r.PeekByte()
+			if err != nil {
+				return tokens, err
+			}
+
+			if string(nextByte) == "=" {
+				newToken = token.New(token.EQUATE, b)
+			} else {
+				newToken = token.New(token.ASSIGN, b)
+			}
+		default:
+			// Check for keyword
+			// If not literal token
 		}
 
-		tokens = append(tokens, token.Token{Literal: string(b)})
-		currentPosition += 1
+		if newToken == nil {
+			continue
+		}
+
+		tokens = append(tokens, *newToken)
 	}
 
 	fmt.Println(tokens)
-	return []token.Token{}
+	return []token.Token{}, nil
 }
 
 func New(input string) Lexer {

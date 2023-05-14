@@ -23,9 +23,16 @@ func (l *lexer) Lex() ([]token.Token, error) {
 	var err error
 	var b byte
 	for err != io.EOF {
-		b, err = r.ReadByte()
+		err = l.skipWhitespace(r)
+		if err != nil {
+			if err == io.EOF {
+				return tokens, nil
+			}
 
-		// TODO: ignore whitespace here
+			return tokens, err
+		}
+
+		b, err = r.ReadByte()
 
 		var newToken *token.Token
 		switch string(b) {
@@ -59,6 +66,30 @@ func (l *lexer) Lex() ([]token.Token, error) {
 
 	fmt.Println(tokens)
 	return []token.Token{}, nil
+}
+
+// Moves reader such that next time readByte() is called it will return the start of the non-whitespace.
+func (l *lexer) skipWhitespace(r *reader) error {
+	var b byte
+	var err error
+	for err != io.EOF && string(b) == " " {
+		b, err = r.ReadByte()
+		if err != nil && err != io.EOF {
+			return err
+		}
+	}
+
+	if err == io.EOF {
+		return err
+	}
+
+	// Unread byte so next time readByte()   is called it's the start of the non-whitespace
+	err = r.UnreadByte()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func New(input string) Lexer {

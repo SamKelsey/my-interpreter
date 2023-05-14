@@ -1,7 +1,6 @@
 package lexer
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"interpreter/token"
 	"io"
@@ -81,8 +80,7 @@ func (l *lexer) Lex() ([]token.Token, error) {
 		tokens = append(tokens, *newToken)
 	}
 
-	fmt.Println(tokens)
-	return []token.Token{}, nil
+	return tokens, nil
 }
 
 // Moves reader such that next time readByte() is called it will return the start of the non-whitespace.

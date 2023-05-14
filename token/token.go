@@ -9,17 +9,23 @@ const (
 
 	ASSIGN
 	EQUATE
+	SQUARE_BRACKET_OPEN
+	SQUARE_BRACKET_CLOSE
 
 	IDENTIFIER
 
 	// Literals
 	STRING
 	NUMBER
+	TRUE
+	FALSE
 
 	// Keywords
+	VARIABLE
 	FUNCTION
 	IF
 	ELSE
+	COMMENT
 )
 
 type Token struct {
@@ -27,9 +33,9 @@ type Token struct {
 	Literal string
 }
 
-func New(tokenType Type, literal byte) *Token {
+func New(tokenType Type, literal string) *Token {
 	return &Token{
 		Type:    tokenType,
-		Literal: string(literal),
+		Literal: literal,
 	}
 }

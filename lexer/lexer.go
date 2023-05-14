@@ -2,8 +2,10 @@ package lexer
 
 import (
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"interpreter/token"
 	"io"
+	"regexp"
 	"strings"
 )
 
@@ -37,24 +39,39 @@ func (l *lexer) Lex() ([]token.Token, error) {
 		var newToken *token.Token
 		switch string(b) {
 		case "+":
-			newToken = token.New(token.ADD, b)
+			newToken = token.New(token.ADD, string(b))
 		case "-":
-			newToken = token.New(token.SUBTRACT, b)
+			newToken = token.New(token.SUBTRACT, string(b))
 		case "=":
-			// Check for equate
 			nextByte, err := r.PeekByte()
-			if err != nil {
+			if err != nil && err != io.EOF {
 				return tokens, err
 			}
 
 			if string(nextByte) == "=" {
-				newToken = token.New(token.EQUATE, b)
+				newToken = token.New(token.EQUATE, string(b))
 			} else {
-				newToken = token.New(token.ASSIGN, b)
+				newToken = token.New(token.ASSIGN, string(b))
 			}
 		default:
-			// Check for keyword
-			// If not literal token
+			// If digit, keep looping until not a digit and return single token
+			if isDigit(string(b)) {
+				bytes := make([]byte, 0)
+
+				for isDigit(string(b)) {
+					bytes = append(bytes, b)
+
+					b, err = r.ReadByte()
+					if err != nil && err != io.EOF {
+						return tokens, err
+					}
+				}
+
+				newToken = token.New(token.NUMBER, string(bytes))
+			}
+			// If letter
+			// -> Check if it's a keyword or boolean literal
+			// -> If not keyword, it must be literal. Keep looping until not a letter or digit **or whitespace**. (eg. parenthesis)
 		}
 
 		if newToken == nil {
@@ -92,6 +109,16 @@ func (l *lexer) skipWhitespace(r *reader) error {
 	return nil
 }
 
+func isDigit(c string) bool {
+	match, err := regexp.MatchString("^[0-9]$", c)
+	if err != nil {
+		log.Warnf("error matching string: %v", err)
+		return false
+	}
+
+	return match
+}
+
 func New(input string) Lexer {
 	return &lexer{input: input}
 }
@@ -105,7 +132,7 @@ type reader struct {
 func (r *reader) PeekByte() (byte, error) {
 	readByte, err := r.ReadByte()
 	if err != nil {
-		return byte(0), err
+		return 0, err
 	}
 
 	err = r.UnreadByte()

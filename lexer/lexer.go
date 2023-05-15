@@ -73,7 +73,7 @@ func (l *lexer) Lex() ([]token.Token, error) {
 				newToken = token.New(token.NUMBER, string(bytes))
 			} else if isLetter(string(b)) {
 				bytes := make([]byte, 0)
-				for isLetter(string(b)) || isDigit(string(b)) || string(b) == " " {
+				for isLetter(string(b)) || isDigit(string(b)) {
 					bytes = append(bytes, b)
 
 					// -> Check if it's a keyword or boolean literal
@@ -83,7 +83,7 @@ func (l *lexer) Lex() ([]token.Token, error) {
 					} else {
 						// TODO: We update this var on potentially every loop as we build the string variable.
 						//       Can we optimise?
-						newToken = token.New(token.STRING, string(bytes))
+						newToken = token.New(token.IDENTIFIER, string(bytes))
 					}
 				}
 

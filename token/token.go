@@ -15,7 +15,6 @@ const (
 	IDENTIFIER
 
 	// Literals
-	STRING
 	NUMBER
 	TRUE
 	FALSE

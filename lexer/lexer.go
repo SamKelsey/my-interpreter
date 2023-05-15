@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"interpreter/token"
 	"io"
@@ -91,7 +92,8 @@ func (l *lexer) Lex() ([]token.Token, error) {
 		}
 
 		if newToken == nil {
-			continue
+			// This means we couldn't assign the byte to a token, so we fail.
+			return tokens, fmt.Errorf("could not lex byte: %s", string(b))
 		}
 
 		tokens = append(tokens, *newToken)

@@ -41,6 +41,10 @@ func (l *lexer) Lex() ([]token.Token, error) {
 			newToken = token.New(token.ADD, string(b))
 		case "-":
 			newToken = token.New(token.SUBTRACT, string(b))
+		case "[":
+			newToken = token.New(token.SQUARE_BRACKET_OPEN, string(b))
+		case "]":
+			newToken = token.New(token.SQUARE_BRACKET_CLOSE, string(b))
 		case "=":
 			nextByte, err := r.PeekByte()
 			if err != nil && err != io.EOF {

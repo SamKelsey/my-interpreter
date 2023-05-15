@@ -74,13 +74,16 @@ func (l *lexer) Lex() ([]token.Token, error) {
 			} else if isLetter(string(b)) {
 				bytes := make([]byte, 0)
 				for isLetter(string(b)) || isDigit(string(b)) || string(b) == " " {
+					bytes = append(bytes, b)
+
 					// -> Check if it's a keyword or boolean literal
 					tokenType, isKeyword := token.KeywordsToTokenType[string(bytes)]
 					if isKeyword {
 						newToken = token.New(tokenType, string(bytes))
 					} else {
-						// -> If not keyword, it must be literal. Keep looping until not a letter or digit **or whitespace**. (eg. parenthesis)
-
+						// TODO: We update this var on potentially every loop as we build the string variable.
+						//       Can we optimise?
+						newToken = token.New(token.STRING, string(bytes))
 					}
 				}
 

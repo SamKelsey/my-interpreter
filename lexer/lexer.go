@@ -67,10 +67,20 @@ func (l *lexer) Lex() ([]token.Token, error) {
 				}
 
 				newToken = token.New(token.NUMBER, string(bytes))
+			} else if isLetter(string(b)) {
+				bytes := make([]byte, 0)
+				for isLetter(string(b)) || isDigit(string(b)) || string(b) == " " {
+					// -> Check if it's a keyword or boolean literal
+					tokenType, isKeyword := token.KeywordsToTokenType[string(bytes)]
+					if isKeyword {
+						newToken = token.New(tokenType, string(bytes))
+					} else {
+						// -> If not keyword, it must be literal. Keep looping until not a letter or digit **or whitespace**. (eg. parenthesis)
+
+					}
+				}
+
 			}
-			// If letter
-			// -> Check if it's a keyword or boolean literal
-			// -> If not keyword, it must be literal. Keep looping until not a letter or digit **or whitespace**. (eg. parenthesis)
 		}
 
 		if newToken == nil {
@@ -109,6 +119,16 @@ func (l *lexer) skipWhitespace(r *reader) error {
 
 func isDigit(c string) bool {
 	match, err := regexp.MatchString("^[0-9]$", c)
+	if err != nil {
+		log.Warnf("error matching string: %v", err)
+		return false
+	}
+
+	return match
+}
+
+func isLetter(c string) bool {
+	match, err := regexp.MatchString("^[A-Za-z]$", c)
 	if err != nil {
 		log.Warnf("error matching string: %v", err)
 		return false

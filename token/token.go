@@ -28,6 +28,19 @@ const (
 	COMMENT
 )
 
+var KeywordsToTokenType = map[string]Type{
+	// Keywords
+	"fun":  FUNCTION,
+	"if":   IF,
+	"else": ELSE,
+	"#":    COMMENT,
+	"var":  VARIABLE,
+
+	// Boolean literals
+	"true":  TRUE,
+	"false": FALSE,
+}
+
 type Token struct {
 	Type    Type
 	Literal string

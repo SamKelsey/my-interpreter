@@ -87,7 +87,7 @@ func (l *lexer) Lex() ([]token.Token, error) {
 func (l *lexer) skipWhitespace(r *reader) error {
 	var b byte
 	var err error
-	for err != io.EOF && string(b) == " " {
+	for err != io.EOF && (string(b) == " " || b == 0) {
 		b, err = r.ReadByte()
 		if err != nil && err != io.EOF {
 			return err

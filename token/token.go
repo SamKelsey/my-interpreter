@@ -24,7 +24,6 @@ const (
 	FUNCTION
 	IF
 	ELSE
-	COMMENT
 )
 
 var KeywordsToTokenType = map[string]Type{
@@ -32,7 +31,6 @@ var KeywordsToTokenType = map[string]Type{
 	"fun":  FUNCTION,
 	"if":   IF,
 	"else": ELSE,
-	"#":    COMMENT,
 	"var":  VARIABLE,
 
 	// Boolean literals

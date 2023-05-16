@@ -4,10 +4,10 @@ Interpreter for a simple language
 ### Syntax example
 
 ```
-var animal = "snake"
+var weight = 1
 
-if animal == "parrot" [
-    # Do something
+if weight == 1 [
+    weight = weight + 1
 ]
 
 fun PrintAnimal(animal) void [

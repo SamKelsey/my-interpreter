@@ -38,6 +38,41 @@ func Test_lexer(t *testing.T) {
 				{token.IDENTIFIER, "hello"},
 			},
 		},
+		{
+			name:  "lex identifier with keyword in it",
+			input: "funny fox",
+			expected: []token.Token{
+				{token.IDENTIFIER, "funny"},
+				{token.IDENTIFIER, "fox"},
+			},
+		},
+		{
+			name:  "lex var assign statement",
+			input: "var x = animal",
+			expected: []token.Token{
+				{token.VARIABLE, "var"},
+				{token.IDENTIFIER, "x"},
+				{token.ASSIGN, "="},
+				{token.IDENTIFIER, "animal"},
+			},
+		},
+		{
+			name:  "lex if condition",
+			input: "if weight == 1 [\n    weight = weight + 1\n]",
+			expected: []token.Token{
+				{token.IF, "if"},
+				{token.IDENTIFIER, "weight"},
+				{token.EQUATE, "=="},
+				{token.NUMBER, "1"},
+				{token.SQUARE_BRACKET_OPEN, "["},
+				{token.IDENTIFIER, "weight"},
+				{token.ASSIGN, "="},
+				{token.IDENTIFIER, "weight"},
+				{token.ADD, "+"},
+				{token.NUMBER, "1"},
+				{token.SQUARE_BRACKET_CLOSE, "]"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {

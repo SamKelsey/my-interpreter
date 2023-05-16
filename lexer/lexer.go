@@ -53,7 +53,12 @@ func (l *lexer) Lex() ([]token.Token, error) {
 			}
 
 			if string(nextByte) == "=" {
-				newToken = token.New(token.EQUATE, string(b))
+				_, err = r.ReadByte()
+				if err != nil {
+					return tokens, fmt.Errorf("internal error, this should not happen: %v", err)
+				}
+
+				newToken = token.New(token.EQUATE, "==")
 			} else {
 				newToken = token.New(token.ASSIGN, string(b))
 			}
@@ -107,7 +112,7 @@ func (l *lexer) Lex() ([]token.Token, error) {
 func (l *lexer) skipWhitespace(r *reader) error {
 	var b byte
 	var err error
-	for err != io.EOF && (string(b) == " " || b == 0) {
+	for err != io.EOF && (string(b) == " " || string(b) == "\n" || b == 0) {
 		b, err = r.ReadByte()
 		if err != nil && err != io.EOF {
 			return err

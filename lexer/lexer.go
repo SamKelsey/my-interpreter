@@ -17,7 +17,6 @@ type lexer struct {
 	input string
 }
 
-// TODO
 func (l *lexer) Lex() ([]token.Token, error) {
 	r := newReader(l.input)
 

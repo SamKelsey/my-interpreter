@@ -61,8 +61,7 @@ func (l *lexer) Lex() ([]token.Token, error) {
 			// If digit, keep looping until not a digit and return single token
 			if isDigit(string(b)) {
 				bytes := make([]byte, 0)
-
-				for isDigit(string(b)) {
+				for isDigit(string(b)) && err != io.EOF {
 					bytes = append(bytes, b)
 
 					b, err = r.ReadByte()
@@ -74,20 +73,22 @@ func (l *lexer) Lex() ([]token.Token, error) {
 				newToken = token.New(token.NUMBER, string(bytes))
 			} else if isLetter(string(b)) {
 				bytes := make([]byte, 0)
-				for isLetter(string(b)) || isDigit(string(b)) {
+				for (isLetter(string(b)) || isDigit(string(b))) && err != io.EOF {
 					bytes = append(bytes, b)
 
-					// -> Check if it's a keyword or boolean literal
-					tokenType, isKeyword := token.KeywordsToTokenType[string(bytes)]
-					if isKeyword {
-						newToken = token.New(tokenType, string(bytes))
-					} else {
-						// TODO: We update this var on potentially every loop as we build the string variable.
-						//       Can we optimise?
-						newToken = token.New(token.IDENTIFIER, string(bytes))
+					b, err = r.ReadByte()
+					if err != nil && err != io.EOF {
+						return tokens, err
 					}
 				}
 
+				// -> Check if it's a keyword or boolean literal
+				tokenType, isKeyword := token.KeywordsToTokenType[string(bytes)]
+				if isKeyword {
+					newToken = token.New(tokenType, string(bytes))
+				} else {
+					newToken = token.New(token.IDENTIFIER, string(bytes))
+				}
 			}
 		}
 

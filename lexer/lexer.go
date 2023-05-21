@@ -81,12 +81,25 @@ func (l *lexer) Lex() ([]token.Token, error) {
 				newToken = token.New(token.NUMBER, string(bytes))
 			} else if isLetter(string(b)) {
 				bytes := make([]byte, 0)
-				for (isLetter(string(b)) || isDigit(string(b))) && err != io.EOF {
+				for true {
 					bytes = append(bytes, b)
 
 					b, err = r.ReadByte()
 					if err != nil && err != io.EOF {
 						return tokens, err
+					}
+
+					if err == io.EOF {
+						break
+					}
+
+					if !(isLetter(string(b)) || isDigit(string(b))) {
+						err = r.UnreadByte()
+						if err != nil {
+							return tokens, err
+						}
+
+						break
 					}
 				}
 

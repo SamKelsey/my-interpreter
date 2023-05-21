@@ -73,6 +73,20 @@ func Test_lexer(t *testing.T) {
 				{token.SQUARE_BRACKET_CLOSE, "]"},
 			},
 		},
+		{
+			name:  "lex func name",
+			input: "fun PrintAnimal(animal) void [\n\n]",
+			expected: []token.Token{
+				{token.FUNCTION, "fun"},
+				{token.IDENTIFIER, "PrintAnimal"},
+				{token.PARENTHESIS_OPEN, "("},
+				{token.IDENTIFIER, "animal"},
+				{token.PARENTHESIS_CLOSE, ")"},
+				{token.VOID, "void"},
+				{token.SQUARE_BRACKET_OPEN, "["},
+				{token.SQUARE_BRACKET_CLOSE, "]"},
+			},
+		},
 	}
 
 	for _, tc := range testCases {

@@ -26,6 +26,7 @@ const (
 	FUNCTION
 	IF
 	ELSE
+	VOID
 )
 
 var KeywordsToTokenType = map[string]Type{
@@ -34,6 +35,7 @@ var KeywordsToTokenType = map[string]Type{
 	"if":   IF,
 	"else": ELSE,
 	"var":  VARIABLE,
+	"void": VOID,
 
 	// Boolean literals
 	"true":  TRUE,
